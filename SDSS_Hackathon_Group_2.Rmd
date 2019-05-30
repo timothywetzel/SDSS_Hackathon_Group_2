@@ -7,8 +7,13 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
-
+```{r setup, }
+library(tidyverse)
+library(ggplot2)
+zillow_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")
+head(zillow_data)
+summary(zillow_data)
+ggplot(data = zillow_data, mapping = aes(x = ZHVI, y = ZRI)) + geom_point()
 ```
 
 # Research Question
@@ -26,6 +31,11 @@ What policies can be targetted to combat these changes?
 ## Cleaning data
 
 ## Plots
+
+```{r example}
+
+```
+
 
 ## Testing the models
 
