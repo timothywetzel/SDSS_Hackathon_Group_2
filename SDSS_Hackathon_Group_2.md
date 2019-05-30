@@ -7,9 +7,7 @@ output:
     keep_md: true
 ---
 
-```{r setup, include=FALSE}
 
-```
 
 # Research Question
 
