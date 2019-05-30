@@ -18,20 +18,40 @@ acs_data_2013 = subset(acs_data_2013, select = c(GEOID, NAME, variable, estimate
 acs_data_2014 = subset(acs_data_2014, select = c(GEOID, NAME, variable, estimate, moe))
 acs_data_2015 = subset(acs_data_2015, select = c(GEOID, NAME, variable, estimate, moe))
 acs_data_2016 = subset(acs_data_2016, select = c(GEOID, NAME, variable, estimate, moe))
-within(acs_data_2016, rm("geometry"))
+
+acs_data_2010 = data.frame(acs_data_2010)
+acs_data_2011 = data.frame(acs_data_2011)
+acs_data_2012 = data.frame(acs_data_2012)
+acs_data_2013 = data.frame(acs_data_2013)
+acs_data_2014 = data.frame(acs_data_2014)
+acs_data_2015 = data.frame(acs_data_2015)
+acs_data_2016 = data.frame(acs_data_2016)
+
+acs_data_2010<- acs_data_2010 %>% select(-geometry)
+acs_data_2011<- acs_data_2011 %>% select(-geometry)
+acs_data_2012<- acs_data_2012 %>% select(-geometry)
+acs_data_2013<- acs_data_2013 %>% select(-geometry)
+acs_data_2014<- acs_data_2014 %>% select(-geometry)
+acs_data_2015<- acs_data_2015 %>% select(-geometry)
+acs_data_2016<- acs_data_2016 %>% select(-geometry)
+
+write.csv(bind_rows(acs_data_2010, acs_data_2011, acs_data_2012, acs_data_2013, acs_data_2014, acs_data_2015, acs_data_2016), file = "../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016.csv")
+
 colnames(acs_data_2016)
 
-write.csv(c(acs_data_2010, acs_data_2011, acs_data_2012, acs_data_2013, acs_data_2014, acs_data_2015, acs_data_2016), file = "../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016.csv")
 head(acs_data_2010)
 
-read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016.csv")
-colnames(acs_data_2016)
+acs_data_ng = read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016_no_geom.csv")
+colnames(acs_data_ng)
 
-
+acs_data_ng = 
 
 head(acs_data_2016)
+structure(acs_data_2016)
 
-acs_data <- acs_data_2010 %>% select(-starts_with("geometry"))
+acs_data <- acs_data %>% select(-geometry)
+acs_data = data.frame(acs_data)
+acs_data
 
 zillow_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")
 head(zillow_data)
