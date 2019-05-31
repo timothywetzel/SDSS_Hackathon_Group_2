@@ -7,7 +7,7 @@ output:
     keep_md: true
 ---
 
-```{r setup, }
+```{r setup}
 library(tidyverse)
 library(ggplot2)
 zillow_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")

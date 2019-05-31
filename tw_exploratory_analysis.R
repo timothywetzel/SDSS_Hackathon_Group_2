@@ -65,3 +65,6 @@ summary(eviction_data)
 housing_inventory_data = readxl::read_xlsx("../Desktop/sdss2019_data_hack/Datasets/2018-Housing-Inventory-Count-Raw-File.xlsx")
 head(housing_inventory_data)
 summary(housing_inventory_data)
+
+acs_data = read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016_NG_Update.csv")
+summary(acs_data)
