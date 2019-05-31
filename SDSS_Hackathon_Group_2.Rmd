@@ -29,7 +29,7 @@ library(car)
 
 ## Research Question 
 
-### Background Information
+### Defining the Problem
 
 Given the various data sets pertaining to housing inventory, status, and cost, we set out to understand a few things:
 
@@ -39,9 +39,7 @@ Given the various data sets pertaining to housing inventory, status, and cost, w
 
 3. What local policies can be targeted to combat these changes?
 
-### Defining the Problem
-
-To investigate these questions, we identified data sets that could hold illuminating information pertaining to the above questions.
+To investigate these questions, we identified data sets that could hold illuminating information pertaining to the above questions. Then, we performed exploratory data analysis and visualization.
 
 ---
 
@@ -50,7 +48,7 @@ To investigate these questions, we identified data sets that could hold illumina
 As mentioned previously, we focused on particular data sets, namely: 
 
 - Zillow's data for King County's ZHVI (median estimated home value) and ZRI (median estimated market-rate rent)
-- 
+- The Eviction Lab's data pertaining to US eviction trends
 
 ---
 
@@ -78,35 +76,37 @@ king_zillow <- read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv"
 oneNightCount <- read_csv("../Desktop/sdss2019_data_hack/Datasets/oneNightCount.csv")
 ```
 
-First, we have two plots that highlight changing ZHVI and ZRI values in the King County area. The red trend line indicates that there has been (in general) a steady increase in home values and rent indicies. The individual curves suggest some startling upticks in value within the past few years especially.
+First, we have two plots that highlight changing ZHVI and ZRI values in the King County area. The **black** trend line indicates that there has been (in general) a steady increase in home values and rent indicies. The individual curves suggest some startling upticks in value within the past few years especially.
 
-```{r zillow_plots, echo=FALSE, results='hide', fig.keep='all', fig.align="center"}
-king_zillow %>% ggplot(data=.,aes(date.home,ZHVI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
+What if we collapse the trend lines into an average? We plot the average of the trends below. Across all GEOIDs from the Zillow dataset,  we find both the mean ZHVI and mean ZRI have a general upward trend across time.
 
-king_zillow %>% filter(!is.na(ZRI)) %>% ggplot(data=.,aes(date.home,ZRI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
+```{r zillow_plots, echo=FALSE, results='hide', warning=FALSE, fig.keep='all', fig.align="center"}
+#full picture
+king_zillow %>% ggplot(data=.,aes(date.home,ZHVI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='black')+ labs(y="Median Estimated Home Value",  x="Year", caption = "Source: Zillow")+scale_color_gradient(low="blue", high="red")
+king_zillow %>% filter(!is.na(ZRI)) %>% ggplot(data=.,aes(date.home,ZRI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='black')+ labs(y="Median Estimated Market Value Rent",  x="Year", caption = "Source: Zillow")+scale_color_gradient(low="blue", high="red")
+
+
+#group by quartiles
+
 
 king_zillow$cuts <- format(with(king_zillow, cut(GEO2010,breaks = as.numeric(quantile(na.omit(king_zillow$GEO2010))),include.lowest=T)),scientific = F)
-king_zillow %>% filter(!is.na(ZHVI)) %>% group_by(cuts,date.home) %>% summarise(ZHVImean=(mean(as.numeric(ZHVI)))) %>% ggplot(aes(date.home,ZHVImean))+geom_point(aes(color=cuts))
+king_zillow %>% filter(!is.na(ZHVI)) %>% group_by(cuts,date.home) %>% summarise(ZHVImean=(mean(as.numeric(ZHVI)))) %>% ggplot(aes(date.home,ZHVImean))+geom_point(aes(color=cuts))+labs(y="Median Estimated Home Value",  x="Year", caption = "Source: Zillow") + scale_colour_discrete(name="GEOID brackets", labels=c("[0,25th)", "[25th, 50th)", "[50th,75th)","[75th,100th]"))
 
-king_zillow %>% filter(!is.na(ZRI)) %>% group_by(cuts,date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point(aes(color=cuts))
+king_zillow %>% filter(!is.na(ZRI)) %>% group_by(cuts,date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point(aes(color=cuts))+ labs(y="Median Estimated Market Value Rent",  x="Year", caption = "Source: Zillow") + scale_colour_discrete(name="GEOID brackets", labels=c("[0,25th)", "[25th, 50th)", "[50th,75th)","[75th,100th]"))
 
-king_zillow %>% filter(!is.na(ZRI)) %>% group_by(date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point()
+# king_zillow %>% filter(!is.na(ZRI)) %>% group_by(date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point()
 
-# Group by quartiles
 
 theme_set(theme_bw())  
-
 p1<-king_zillow %>% filter(!is.na(ZHVI)) %>% group_by(date.home) %>% summarise(ZHVImean=(mean(as.numeric(ZHVI)))) %>% ggplot(aes(date.home,ZHVImean,color=ZHVImean))+geom_point()+geom_smooth(method="loess", se=F) + labs(y="Median Estimated Home Value",  x="Year", caption = "Source: Zillow")+scale_color_gradient(low="blue", high="red")  + theme(legend.position = "none")
-
 p2<-evictions %>% filter(!is.na(evictions)) %>% group_by(year) %>% summarise(evictionsmean=(mean(evictions))) %>% ggplot(aes(year,evictionsmean,color=evictionsmean))+geom_point()+geom_smooth(method="loess", se=F)+ labs(y="Number of evictions",  x="Year", caption = "Source: https://evictionlab.org/")+scale_color_gradient(low="blue", high="red") +theme(legend.position = "none")+xlim(c(1996,2016))
 
 gridExtra::grid.arrange(p1,p2,ncol=1)
 ```
 
-What if we collapse the trend lines into an average? We plot the average of the trends below. Across all GEOIDs from the Zillow dataset,  we find both the mean ZHVI and mean ZRI have a general upward trend across time.
-
-```{r spatial_plots, cache = TRUE, include=FALSE, fig.align="center"}
+```{r spatial_plots, warning=FALSE, cache = TRUE, include=FALSE, fig.align="center"}
 # Sample code for grabbing spatial data
+
 options(tigris_use_cache = TRUE)
 
 # Grab shape files for King county at the census tract level
@@ -145,19 +145,19 @@ evic3 <- tm_shape(dat_evictions) +
   tm_layout(scale = 0.8) +
   tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
 
-tmap_arrange(p3,evic1)
 
-tmap_arrange(evic3,evic2)
 ```
 
 Let's move on to spatial plots. The first graph presents median home values by region in King County, with darker and more vibrant <span style="color:red">red</span> indicating higher home values in general.
 
 The second graph provides the total number of evictions in the various areas comprising King County. 
 
-It is appartent that there is some sort of connection between these two, before any analysis has been performed on the data. The lightest <span style="color:red">red</span> areas on the first plot seem to overlap mostly with the darkest <span style="color:green">green</span> areas on the second. This would indicate that areas with lower median home value have *higher* rates of eviction as a whole.
+It is apparent that there is some sort of connection between these two before any analysis has been performed on the data. The lightest <span style="color:red">red</span> areas on the first plot seem to overlap mostly with the darkest <span style="color:green">green</span> areas on the second. This would indicate that areas with lower median home value have *higher* rates of eviction as a whole.
 
-```{r make_spatial_plot, echo=FALSE, results='hide', fig.keep='all', fig.align="center"}
-tmap_arrange(p3,evic1)
+```{r make_spatial_plot, echo=FALSE, warning=FALSE, results='hide', fig.keep='all', fig.align="center"}
+tmap_arrange(p3,evic1,evic3,evic2,ncol = 2)
+
+#tmap_arrange(evic3,evic2)
 ```
 
 ---
