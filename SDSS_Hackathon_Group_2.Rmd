@@ -9,11 +9,16 @@ output:
 
 ![](https://www.amstat.org/images/asaimages/meetings/sdss2019logo.png){width=250px}
 
+## Github
 https://github.com/timothywetzel/SDSS_Hackathon_Group_2
+
+---
 
 ![](https://update.lib.berkeley.edu/wp-content/uploads/2016/05/census-logo.png){width=250px}
 ![](https://d1.awsstatic.com/logos/600x400_logos/600x400_Zillow_Logo.f3e426d3259e2f7aea0a31e6d4f9ffeb1a209745.png){width=250px}
 ![](https://sociology.princeton.edu/sites/sociology/files/styles/panopoly_image_original/public/eviction_lab_logo_cropped.png?itok=ZoE8LP69){width=250px}
+
+---
 
 ```{r setup, include = FALSE}
 library(tidyverse)
@@ -36,6 +41,8 @@ Given the various data sets pertaining to housing inventory, status, and cost, w
 
 To investigate these questions, we identified data sets that could hold illuminating information pertaining to the above questions.
 
+---
+
 ## Data 
 
 As mentioned previously, we focused on particular data sets, namely: 
@@ -50,6 +57,8 @@ As mentioned previously, we focused on particular data sets, namely:
 ```
 
 ### Cleaning Data
+
+---
 
 ## Modelling and Visualization
 
@@ -73,7 +82,9 @@ king_zillow <- read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv"
 oneNightCount <- read_csv("../Desktop/sdss2019_data_hack/Datasets/oneNightCount.csv")
 ```
 
-```{r zillow_plots, echo=FALSE}
+First, we have two plots that highlight changing ZHVI and ZRI values in the King County area. The red trend line indicates that there has been (in general) a steady increase in home values and rent indicies. The individual curves suggest some startling upticks in value within the past few years especially.
+
+```{r zillow_plots, echo=FALSE, results='hide', fig.keep='all', fig.align="center"}
 king_zillow %>% ggplot(data=.,aes(date.home,ZHVI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
 
 king_zillow %>% filter(!is.na(ZRI)) %>% ggplot(data=.,aes(date.home,ZRI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
@@ -96,7 +107,9 @@ p2<-evictions %>% filter(!is.na(evictions)) %>% group_by(year) %>% summarise(evi
 gridExtra::grid.arrange(p1,p2,ncol=1)
 ```
 
-```{r spatial_plots, include=FALSE}
+What if we collapse the trend lines into an average? We plot the average of the trends below. Across all GEOIDs from the Zillow dataset,  we find both the mean ZHVI and mean ZRI have a general upward trend across time.
+
+```{r spatial_plots, include=FALSE, fig.align="center"}
 # Grab shape files for King county at the census tract level
 king_spatial <- tracts(state = "WA", county = "King")
 king_zillow$GEOID <- king_zillow$GEO2010
@@ -134,17 +147,45 @@ evic3 <- tm_shape(dat_evictions) +
   tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
 ```
 
-```{r make_spatial_plot}
+Let's move on to spatial plots. The first graph presents median home values by region in King County, with darker and more vibrant <span style="color:red">red</span> indicating higher home values in general.
+
+The second graph provides the total number of evictions in the various areas comprising King County. 
+
+It is appartent that there is some sort of connection between these two, before any analysis has been performed on the data. The lightest <span style="color:red">red</span> areas on the first plot seem to overlap mostly with the darkest <span style="color:green">green</span> areas on the second. This would indicate that areas with lower median home value have *higher* rates of eviction as a whole.
+
+```{r make_spatial_plot, echo=FALSE, results='hide', fig.keep='all', fig.align="center"}
 tmap_arrange(p3,evic1)
 ```
 
+---
 
 ### Developing Models
 
+To investigate further what was uncovered in our exploratory data analysis and plot development, we created a basic linear regression. We chose our response to be eviction rates in King County, WA, and our explanatory variables to be poverty rate and median property values for the same area.
+
+We created the follwing model to explain the relationships between the variables:
+
+```{r}
+
+```
+
+
 ### Evaluating Models
 
-## Interpretation and Conclusion
+In order to evaluate our models, we created a variety of plots standard in interpreting model fit and health of assumptions.
+
+
+
+---
+
+## Conclusion
+
+### Interpretation
 
 The King County Housing Authority publishes its [policies](https://www.kcha.org/about/policies) online for public viewing. 
 
 From our results, it is apparent that 
+
+### Further Analysis
+
+There is room for much more investigation following this study. For instance, we could be incoporating many additional regressors that would paint a more complete picture of the studied phenomenon.

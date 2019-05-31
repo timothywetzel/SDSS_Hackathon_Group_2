@@ -1,5 +1,6 @@
 library(tidyverse)
 library(tidycensus)
+library(car)
 
 census_api_key("9a0425beda1e3422155a87028b50451b5483b2f2", install = TRUE)
 readRenviron("~/.Renviron")
@@ -35,7 +36,9 @@ acs_data_2014<- acs_data_2014 %>% select(-geometry)
 acs_data_2015<- acs_data_2015 %>% select(-geometry)
 acs_data_2016<- acs_data_2016 %>% select(-geometry)
 
-write.csv(bind_rows(acs_data_2010, acs_data_2011, acs_data_2012, acs_data_2013, acs_data_2014, acs_data_2015, acs_data_2016), file = "../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016.csv")
+acs_data = bind_rows(acs_data_2010, acs_data_2011, acs_data_2012, acs_data_2013, acs_data_2014, acs_data_2015, acs_data_2016)
+
+write.csv(acs_data, file = "../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016.csv")
 
 colnames(acs_data_2016)
 
@@ -47,10 +50,6 @@ colnames(acs_data_ng)
 head(acs_data_2016)
 structure(acs_data_2016)
 
-acs_data <- acs_data %>% select(-geometry)
-acs_data = data.frame(acs_data)
-acs_data
-
 zillow_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")
 head(zillow_data)
 summary(zillow_data)
@@ -60,12 +59,31 @@ eviction_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/evictions.csv")
 head(eviction_data)
 summary(eviction_data)
 
-housing_inventory_data = readxl::read_xlsx("../Desktop/sdss2019_data_hack/Datasets/2018-Housing-Inventory-Count-Raw-File.xlsx")
-head(housing_inventory_data)
-summary(housing_inventory_data)
+evics_acs = merge(eviction_data, acs_data, by = "GEOID")
+head(evics_acs)
 
-h_inv_data = housing_inventory_data[housing_inventory_data$'CocState' == "WA",]
-summary(h_inv_data)
+evics_acs$GEOID = factor(evics_acs$GEOID)
+evics_acs$year = factor(evics_acs$year)
+evics_acs$name = factor(evics_acs$name)
+evics_acs$variable = factor(evics_acs$variable)
+evics_acs
+
+lmod = lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + evics_acs$`median-property-value`)
+lmod
+
+residualPlots(lmod)
+marginalModelPlots(lmod)
+avPlots(lmod)
+crPlots(lmod)
+ceresPlots(lmod)
+
+
+housing_inventory_data = readxl::read_xlsx("../Desktop/sdss2019_data_hack/Datasets/2018-Housing-Inventory-Count-Raw-File.xlsx")
+housing_inventory_data = housing_inventory_data[housing_inventory_data$'HudNum' == "WA-500",]
+head(h_inv_data)
+
+x = merge(h_inv_data, acs_data_ng)
+head(x)
 
 acs_data = read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016_NG_Update.csv")
 summary(acs_data)
