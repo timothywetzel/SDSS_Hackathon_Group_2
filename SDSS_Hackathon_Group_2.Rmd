@@ -55,9 +55,89 @@ As mentioned previously, we focused on particular data sets, namely:
 
 ### Plots
 
-```{r example}
+```{r load_plot_packages_and_data, include=FALSE}
+library(readr)
+library(readxl)
+library(tidyverse)
+library(hydroTSM)
+library(ggplot2)
+library(scales)
+library(tigris)
+library(tmap)
 
+X2007_2018_PIT_Counts_by_CoC <- read_excel("../Desktop/sdss2019_data_hack/Datasets/2007-2018-PIT-Counts-by-CoC.xlsx")
+X2018_Housing_Inventory_Count_Raw_File <- read_excel("../Desktop/sdss2019_data_hack/Datasets/2018-Housing-Inventory-Count-Raw-File.xlsx")
+evictions <- read_csv("../Desktop/sdss2019_data_hack/Datasets/evictions.csv")
+forecloseWATract <- read_csv("../Desktop/sdss2019_data_hack/Datasets/forecloseWATract.csv")
+king_zillow <- read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")
+oneNightCount <- read_csv("../Desktop/sdss2019_data_hack/Datasets/oneNightCount.csv")
 ```
+
+```{r zillow_plots, echo=FALSE}
+king_zillow %>% ggplot(data=.,aes(date.home,ZHVI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
+
+king_zillow %>% filter(!is.na(ZRI)) %>% ggplot(data=.,aes(date.home,ZRI))+geom_line(aes(group = GEO2010,color=GEO2010))+geom_smooth(method = "lm",color='red')
+
+king_zillow$cuts <- format(with(king_zillow, cut(GEO2010,breaks = as.numeric(quantile(na.omit(king_zillow$GEO2010))),include.lowest=T)),scientific = F)
+king_zillow %>% filter(!is.na(ZHVI)) %>% group_by(cuts,date.home) %>% summarise(ZHVImean=(mean(as.numeric(ZHVI)))) %>% ggplot(aes(date.home,ZHVImean))+geom_point(aes(color=cuts))
+
+king_zillow %>% filter(!is.na(ZRI)) %>% group_by(cuts,date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point(aes(color=cuts))
+
+king_zillow %>% filter(!is.na(ZRI)) %>% group_by(date.home) %>% summarise(ZRImean=(mean(as.numeric(ZRI)))) %>% ggplot(aes(date.home,ZRImean))+geom_point()
+
+# Group by quartiles
+
+theme_set(theme_bw())  
+
+p1<-king_zillow %>% filter(!is.na(ZHVI)) %>% group_by(date.home) %>% summarise(ZHVImean=(mean(as.numeric(ZHVI)))) %>% ggplot(aes(date.home,ZHVImean,color=ZHVImean))+geom_point()+geom_smooth(method="loess", se=F) + labs(y="Median Estimated Home Value",  x="Year", caption = "Source: Zillow")+scale_color_gradient(low="blue", high="red")  + theme(legend.position = "none")
+
+p2<-evictions %>% filter(!is.na(evictions)) %>% group_by(year) %>% summarise(evictionsmean=(mean(evictions))) %>% ggplot(aes(year,evictionsmean,color=evictionsmean))+geom_point()+geom_smooth(method="loess", se=F)+ labs(y="Number of evictions",  x="Year", caption = "Source: https://evictionlab.org/")+scale_color_gradient(low="blue", high="red") +theme(legend.position = "none")+xlim(c(1996,2016))
+
+gridExtra::grid.arrange(p1,p2,ncol=1)
+```
+
+```{r spatial_plots, include=FALSE}
+# Grab shape files for King county at the census tract level
+king_spatial <- tracts(state = "WA", county = "King")
+king_zillow$GEOID <- king_zillow$GEO2010
+
+# Use geo_join to join the spatial data to one of the other datasets
+dat_hv <- geo_join(spatial_data = king_spatial, king_zillow, by = "GEOID")
+
+evictions$poverty <- evictions$`poverty-rate`
+dat_evictions <- geo_join(spatial_data = king_spatial, evictions, by = "GEOID") 
+
+
+p3<-tm_shape(dat_hv) +
+  tm_fill("ZHVI", style = "quantile", n = 6, palette = "Reds", 
+          title = "Median home values \nin King County, WA") + 
+  tm_layout(scale = 0.8) +
+  tm_legend(bg.color = "white", bg.alpha = 0.3) 
+
+
+evic1 <- tm_shape(dat_evictions) +
+  tm_fill("evictions", style = "quantile", n = 6, palette = "Greens", 
+          title = "Number of Evictions \nin King County, WA") + 
+  tm_layout(scale = 0.8) +
+  tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
+
+evic2 <- tm_shape(dat_evictions) +
+  tm_fill("eviction.rate", style = "quantile", n = 6, palette = "Greens", 
+          title = "Eviction rates \nin King County, WA") + 
+  tm_layout(scale = 0.8) +
+  tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
+
+evic3 <- tm_shape(dat_evictions) +
+  tm_fill("poverty", style = "quantile", n = 6, palette = "Reds", 
+          title = "Eviction rates \nin King County, WA") + 
+  tm_layout(scale = 0.8) +
+  tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
+```
+
+```{r make_spatial_plot}
+tmap_arrange(p3,evic1)
+```
+
 
 ### Developing Models
 

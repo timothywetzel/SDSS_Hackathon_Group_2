@@ -7,6 +7,8 @@ output:
     keep_md: true
 ---
 
+
+
 ![](https://www.amstat.org/images/asaimages/meetings/sdss2019logo.png){width=250px}
 
 https://github.com/timothywetzel/SDSS_Hackathon_Group_2
@@ -50,6 +52,13 @@ As mentioned previously, we focused on particular data sets, namely:
 
 ### Plots
 
+
+
+![](Figs/zillow_plots-1.png)<!-- -->![](Figs/zillow_plots-2.png)<!-- -->![](Figs/zillow_plots-3.png)<!-- -->![](Figs/zillow_plots-4.png)<!-- -->![](Figs/zillow_plots-5.png)<!-- -->![](Figs/zillow_plots-6.png)<!-- -->
+
+
+
+![](Figs/make_spatial_plot-1.png)<!-- -->
 
 
 ### Developing Models
