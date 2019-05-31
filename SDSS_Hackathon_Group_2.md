@@ -160,6 +160,11 @@ summary(lmod)
 In order to evaluate our models, we created a variety of plots standard in interpreting model fit and health of assumptions.
 
 
+```r
+marginalModelPlots(lmod)
+```
+
+<img src="SDSS_Hackathon_Group_2_files/figure-html/health_and_assumption_plots-1.png" style="display: block; margin: auto;" />
 
 
 ---

@@ -211,13 +211,13 @@ eviction_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/evictions.csv")
 evics_acs = merge(eviction_data, acs_data, by = "GEOID")
 ```
 
-```{r}
+```{r lmod_creation}
 lmod = lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + evics_acs$`median-property-value`)
 
 lmod
 ```
 
-```{r}
+```{r lmod_summary}
 summary(lmod)
 ```
 
@@ -226,14 +226,11 @@ summary(lmod)
 
 In order to evaluate our models, we created a variety of plots standard in interpreting model fit and health of assumptions.
 
-```{r health_and_assumption_plots, cache = TRUE, fig.align = "center"}
-residualPlots(lmod)
+```{r health_plots,  cache = TRUE, fig.align = "center"}
 marginalModelPlots(lmod)
-avPlots(lmod)
-crPlots(lmod)
-ceresPlots(lmod)
 ```
 
+Here, our plots indicate that our model is mostly viable. 
 
 ---
 
@@ -248,3 +245,5 @@ From our results, it is apparent that
 ### Further Analysis
 
 There is room for much more investigation following this study. For instance, we could be incoporating many additional regressors that would paint a more complete picture of the studied phenomenon.
+
+Furthermore, we could explore transformations of the regressor variables to more tightly couple our model with the observed data.
