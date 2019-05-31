@@ -230,7 +230,7 @@ In order to evaluate our models, we created a variety of plots standard in inter
 marginalModelPlots(lmod)
 ```
 
-Here, our plots indicate that our model is mostly viable. 
+Here, our plots indicate that our model is mostly viable. As the <span style="color:blue">blue</span> line and the dotted <span style="color:red">red</span> line diverge, it indicates that the model we have fit is not consistent with the observations. From an eye-test, the results are promising!
 
 ---
 

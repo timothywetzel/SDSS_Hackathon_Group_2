@@ -164,8 +164,9 @@ In order to evaluate our models, we created a variety of plots standard in inter
 marginalModelPlots(lmod)
 ```
 
-<img src="SDSS_Hackathon_Group_2_files/figure-html/health_and_assumption_plots-1.png" style="display: block; margin: auto;" />
+<img src="SDSS_Hackathon_Group_2_files/figure-html/health_plots-1.png" style="display: block; margin: auto;" />
 
+Here, our plots indicate that our model is mostly viable. As the <span style="color:blue">blue</span> line and the dotted <span style="color:red">red</span> line diverge, it indicates that the model we have fit is not consistent with the observations. From an eye-test, the results are promising!
 
 ---
 
@@ -180,3 +181,5 @@ From our results, it is apparent that
 ### Further Analysis
 
 There is room for much more investigation following this study. For instance, we could be incoporating many additional regressors that would paint a more complete picture of the studied phenomenon.
+
+Furthermore, we could explore transformations of the regressor variables to more tightly couple our model with the observed data.

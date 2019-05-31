@@ -71,6 +71,8 @@ evics_acs
 lmod = lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + evics_acs$`median-property-value`)
 lmod
 
+summary(lmod)
+
 residualPlots(lmod)
 marginalModelPlots(lmod)
 avPlots(lmod)
