@@ -47,17 +47,13 @@ As mentioned previously, we focused on particular data sets, namely:
 - Zillow's data for King County's ZHVI (median estimated home value) and ZRI (median estimated market-rate rent)
 - 
 
-### Merging Data
-
-
-
-### Cleaning Data
-
 ---
 
-## Modelling and Visualization
+## Visualization and Modelling
 
 ### Plots
+
+We set out to understand the data from a visual perspective. This involved creating a variety of graphs and charts to illustrate the behavior of the data we chose to focus on. This information would inform our approach to constructing our statistical model.
 
 
 
@@ -99,12 +95,83 @@ It is appartent that there is some sort of connection between these two, before 
 
 ### Developing Models
 
+To investigate further what was uncovered in our exploratory data analysis and plot development, we created a basic linear regression. We chose our response to be eviction rates in King County, WA, and our explanatory variables to be poverty rate and median property values for the same area.
+
+We created the following model to explain the relationships between the variables:
+
+
+
+
+```r
+lmod = lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + evics_acs$`median-property-value`)
+
+lmod
+```
+
+```
+## 
+## Call:
+## lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + 
+##     evics_acs$`median-property-value`)
+## 
+## Coefficients:
+##                       (Intercept)           evics_acs$`poverty-rate`  
+##                         1.390e+00                          1.783e-02  
+## evics_acs$`median-property-value`  
+##                        -1.865e-06
+```
+
+
+```r
+summary(lmod)
+```
+
+```
+## 
+## Call:
+## lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + 
+##     evics_acs$`median-property-value`)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.1833 -0.5317 -0.2099  0.2605 21.8664 
+## 
+## Coefficients:
+##                                     Estimate Std. Error t value Pr(>|t|)
+## (Intercept)                        1.390e+00  1.413e-02   98.38   <2e-16
+## evics_acs$`poverty-rate`           1.783e-02  6.692e-04   26.64   <2e-16
+## evics_acs$`median-property-value` -1.865e-06  2.880e-08  -64.77   <2e-16
+##                                      
+## (Intercept)                       ***
+## evics_acs$`poverty-rate`          ***
+## evics_acs$`median-property-value` ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9809 on 47226 degrees of freedom
+##   (133 observations deleted due to missingness)
+## Multiple R-squared:  0.1378,	Adjusted R-squared:  0.1378 
+## F-statistic:  3774 on 2 and 47226 DF,  p-value: < 2.2e-16
+```
+
+
 ### Evaluating Models
+
+In order to evaluate our models, we created a variety of plots standard in interpreting model fit and health of assumptions.
+
+
+
 
 ---
 
-## Interpretation and Conclusion
+## Conclusion
+
+### Interpretation
 
 The King County Housing Authority publishes its [policies](https://www.kcha.org/about/policies) online for public viewing. 
 
 From our results, it is apparent that 
+
+### Further Analysis
+
+There is room for much more investigation following this study. For instance, we could be incoporating many additional regressors that would paint a more complete picture of the studied phenomenon.

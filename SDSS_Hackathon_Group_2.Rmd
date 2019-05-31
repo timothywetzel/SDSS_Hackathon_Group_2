@@ -23,6 +23,8 @@ https://github.com/timothywetzel/SDSS_Hackathon_Group_2
 ```{r setup, include = FALSE}
 library(tidyverse)
 library(ggplot2)
+library(tidycensus)
+library(car)
 ```
 
 ## Research Question 
@@ -50,19 +52,13 @@ As mentioned previously, we focused on particular data sets, namely:
 - Zillow's data for King County's ZHVI (median estimated home value) and ZRI (median estimated market-rate rent)
 - 
 
-### Merging Data
-
-```{r}
-
-```
-
-### Cleaning Data
-
 ---
 
-## Modelling and Visualization
+## Visualization and Modelling
 
 ### Plots
+
+We set out to understand the data from a visual perspective. This involved creating a variety of graphs and charts to illustrate the behavior of the data we chose to focus on. This information would inform our approach to constructing our statistical model.
 
 ```{r load_plot_packages_and_data, include=FALSE}
 library(readr)
@@ -109,7 +105,10 @@ gridExtra::grid.arrange(p1,p2,ncol=1)
 
 What if we collapse the trend lines into an average? We plot the average of the trends below. Across all GEOIDs from the Zillow dataset,  we find both the mean ZHVI and mean ZRI have a general upward trend across time.
 
-```{r spatial_plots, include=FALSE, fig.align="center"}
+```{r spatial_plots, cache = TRUE, include=FALSE, fig.align="center"}
+# Sample code for grabbing spatial data
+options(tigris_use_cache = TRUE)
+
 # Grab shape files for King county at the census tract level
 king_spatial <- tracts(state = "WA", county = "King")
 king_zillow$GEOID <- king_zillow$GEO2010
@@ -142,9 +141,13 @@ evic2 <- tm_shape(dat_evictions) +
 
 evic3 <- tm_shape(dat_evictions) +
   tm_fill("poverty", style = "quantile", n = 6, palette = "Reds", 
-          title = "Eviction rates \nin King County, WA") + 
+          title = "Poverty rates \nin King County, WA") + 
   tm_layout(scale = 0.8) +
   tm_legend(position = c("right", "bottom"), bg.color = "white", bg.alpha = 0.6) 
+
+tmap_arrange(p3,evic1)
+
+tmap_arrange(evic3,evic2)
 ```
 
 Let's move on to spatial plots. The first graph presents median home values by region in King County, with darker and more vibrant <span style="color:red">red</span> indicating higher home values in general.
@@ -163,10 +166,59 @@ tmap_arrange(p3,evic1)
 
 To investigate further what was uncovered in our exploratory data analysis and plot development, we created a basic linear regression. We chose our response to be eviction rates in King County, WA, and our explanatory variables to be poverty rate and median property values for the same area.
 
-We created the follwing model to explain the relationships between the variables:
+We created the following model to explain the relationships between the variables:
+
+```{r import_and_merge_data, include=FALSE, cache=TRUE}
+
+census_api_key("9a0425beda1e3422155a87028b50451b5483b2f2", install = TRUE, overwrite = TRUE)
+readRenviron("~/.Renviron")
+acs_data_2010 = get_acs(geography = "tract", year = 2010, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2011 = get_acs(geography = "tract", year = 2011, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2012 = get_acs(geography = "tract", year = 2012, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2013 = get_acs(geography = "tract", year = 2013, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2014 = get_acs(geography = "tract", year = 2014, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2015 = get_acs(geography = "tract", year = 2015, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+acs_data_2016 = get_acs(geography = "tract", year = 2016, state = "WA", county = "King", geometry = TRUE, variables = "B19013_001")
+
+acs_data_2010 = subset(acs_data_2010, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2011 = subset(acs_data_2011, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2012 = subset(acs_data_2012, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2013 = subset(acs_data_2013, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2014 = subset(acs_data_2014, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2015 = subset(acs_data_2015, select = c(GEOID, NAME, variable, estimate, moe))
+acs_data_2016 = subset(acs_data_2016, select = c(GEOID, NAME, variable, estimate, moe))
+
+acs_data_2010 = data.frame(acs_data_2010)
+acs_data_2011 = data.frame(acs_data_2011)
+acs_data_2012 = data.frame(acs_data_2012)
+acs_data_2013 = data.frame(acs_data_2013)
+acs_data_2014 = data.frame(acs_data_2014)
+acs_data_2015 = data.frame(acs_data_2015)
+acs_data_2016 = data.frame(acs_data_2016)
+
+acs_data_2010<- acs_data_2010 %>% select(-geometry)
+acs_data_2011<- acs_data_2011 %>% select(-geometry)
+acs_data_2012<- acs_data_2012 %>% select(-geometry)
+acs_data_2013<- acs_data_2013 %>% select(-geometry)
+acs_data_2014<- acs_data_2014 %>% select(-geometry)
+acs_data_2015<- acs_data_2015 %>% select(-geometry)
+acs_data_2016<- acs_data_2016 %>% select(-geometry)
+
+acs_data = bind_rows(acs_data_2010, acs_data_2011, acs_data_2012, acs_data_2013, acs_data_2014, acs_data_2015, acs_data_2016)
+
+eviction_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/evictions.csv")
+
+evics_acs = merge(eviction_data, acs_data, by = "GEOID")
+```
 
 ```{r}
+lmod = lm(formula = evics_acs$`eviction-rate` ~ evics_acs$`poverty-rate` + evics_acs$`median-property-value`)
 
+lmod
+```
+
+```{r}
+summary(lmod)
 ```
 
 
@@ -174,6 +226,13 @@ We created the follwing model to explain the relationships between the variables
 
 In order to evaluate our models, we created a variety of plots standard in interpreting model fit and health of assumptions.
 
+```{r health_and_assumption_plots, cache = TRUE, fig.align = "center"}
+residualPlots(lmod)
+marginalModelPlots(lmod)
+avPlots(lmod)
+crPlots(lmod)
+ceresPlots(lmod)
+```
 
 
 ---
