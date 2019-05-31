@@ -44,8 +44,6 @@ head(acs_data_2010)
 acs_data_ng = read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016_no_geom.csv")
 colnames(acs_data_ng)
 
-acs_data_ng = 
-
 head(acs_data_2016)
 structure(acs_data_2016)
 
@@ -65,6 +63,9 @@ summary(eviction_data)
 housing_inventory_data = readxl::read_xlsx("../Desktop/sdss2019_data_hack/Datasets/2018-Housing-Inventory-Count-Raw-File.xlsx")
 head(housing_inventory_data)
 summary(housing_inventory_data)
+
+h_inv_data = housing_inventory_data[housing_inventory_data$'CocState' == "WA",]
+summary(h_inv_data)
 
 acs_data = read.csv("../Desktop/sdss2019_data_hack/Datasets/acs_data_2010-2016_NG_Update.csv")
 summary(acs_data)

@@ -1,42 +1,70 @@
 ---
 title: "SDSS Hackathon Group 2"
-author: "Jianan Hui, Tiffany , Tim Wetzel"
+author: "Jianan Hui, Tiffany Jiang, Tim Wetzel"
 date: "5/31/2019"
 output: 
   html_document:
     keep_md: true
 ---
 
-```{r setup}
+![](https://www.amstat.org/images/asaimages/meetings/sdss2019logo.png){width=250px}
+
+https://github.com/timothywetzel/SDSS_Hackathon_Group_2
+
+![](https://update.lib.berkeley.edu/wp-content/uploads/2016/05/census-logo.png){width=250px}
+![](https://d1.awsstatic.com/logos/600x400_logos/600x400_Zillow_Logo.f3e426d3259e2f7aea0a31e6d4f9ffeb1a209745.png){width=250px}
+![](https://sociology.princeton.edu/sites/sociology/files/styles/panopoly_image_original/public/eviction_lab_logo_cropped.png?itok=ZoE8LP69){width=250px}
+
+```{r setup, include = FALSE}
 library(tidyverse)
 library(ggplot2)
-zillow_data = read_csv("../Desktop/sdss2019_data_hack/Datasets/king_zillow.csv")
-head(zillow_data)
-summary(zillow_data)
-ggplot(data = zillow_data, mapping = aes(x = ZHVI, y = ZRI)) + geom_point()
 ```
 
-# Research Question
+## Research Question 
 
-How has housing inventory changed over the years in King County?
+### Background Information
 
-What regressors are most significant in predicting these changes?
+Given the various data sets pertaining to housing inventory, status, and cost, we set out to understand a few things:
 
-What policies can be targetted to combat these changes?
+1. How has housing cost changed over the years in King County?
 
-## Defining the problem
+2. Is there evidence for spatial relationships in housing insecurity in King County?
 
-## Merging data
+3. What local policies can be targeted to combat these changes?
 
-## Cleaning data
+### Defining the Problem
 
-## Plots
+To investigate these questions, we identified data sets that could hold illuminating information pertaining to the above questions.
+
+## Data 
+
+As mentioned previously, we focused on particular data sets, namely: 
+
+- Zillow's data for King County's ZHVI (median estimated home value) and ZRI (median estimated market-rate rent)
+- 
+
+### Merging Data
+
+```{r}
+
+```
+
+### Cleaning Data
+
+## Modelling and Visualization
+
+### Plots
 
 ```{r example}
 
 ```
 
+### Developing Models
 
-## Testing the models
+### Evaluating Models
 
-## Interpretation and conclusion
+## Interpretation and Conclusion
+
+The King County Housing Authority publishes its [policies](https://www.kcha.org/about/policies) online for public viewing. 
+
+From our results, it is apparent that 

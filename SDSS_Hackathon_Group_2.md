@@ -7,6 +7,8 @@ output:
     keep_md: true
 ---
 
+![](https://www.amstat.org/images/asaimages/meetings/sdss2019logo.png){width=250px}
+
 https://github.com/timothywetzel/SDSS_Hackathon_Group_2
 
 ![](https://update.lib.berkeley.edu/wp-content/uploads/2016/05/census-logo.png){width=250px}
@@ -15,31 +17,47 @@ https://github.com/timothywetzel/SDSS_Hackathon_Group_2
 
 
 
-# Research Question
+## Research Question 
+
+### Background Information
 
 Given the various data sets pertaining to housing inventory, status, and cost, we set out to understand a few things:
 
-1. How has housing inventory changed over the years in King County?
+1. How has housing cost changed over the years in King County?
 
-2. What regressors are most significant in predicting these changes?
+2. Is there evidence for spatial relationships in housing insecurity in King County?
 
-3. What policies can be targetted to combat these changes?
+3. What local policies can be targeted to combat these changes?
 
-## Defining the problem
+### Defining the Problem
+
+To investigate these questions, we identified data sets that could hold illuminating information pertaining to the above questions.
+
+## Data 
+
+As mentioned previously, we focused on particular data sets, namely: 
+
+- Zillow's data for King County's ZHVI (median estimated home value) and ZRI (median estimated market-rate rent)
+- 
+
+### Merging Data
 
 
 
-## Merging data
+### Cleaning Data
+
+## Modelling and Visualization
+
+### Plots
 
 
 
-## Cleaning data
+### Developing Models
 
-## Plots
+### Evaluating Models
 
+## Interpretation and Conclusion
 
+The King County Housing Authority publishes its [policies](https://www.kcha.org/about/policies) online for public viewing. 
 
-
-## Testing the models
-
-## Interpretation and conclusion
+From our results, it is apparent that 
